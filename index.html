@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,6 +109,12 @@ body{font-family:'Segoe UI','Helvetica Neue',system-ui,-apple-system,sans-serif;
 .insight-text{font-size:13px;line-height:1.6;color:#bbf7d0}
 .empty-state{text-align:center;padding:36px 16px}.empty-icon{font-size:44px}
 .empty-text{font-size:15px;color:#64748b;margin:10px 0 3px}.empty-sub{font-size:12px;color:#475569}
+.footer{text-align:center;padding:30px 16px 20px;margin-top:40px;border-top:1px solid #1e293b}
+.footer-logos{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.footer-logo{height:40px;opacity:0.8;border-radius:6px}
+.footer-text{font-size:11px;color:#475569;line-height:1.6}
+.footer-text a{color:#64748b;text-decoration:none}
+.footer-text a:hover{color:#f59e0b}
 .header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .results-title{font-size:26px;font-weight:900;text-align:center;margin:6px 0 18px}
 .setup-title{font-size:26px;font-weight:800;margin:6px 0 22px;color:#f1f5f9}
@@ -117,6 +124,17 @@ body{font-family:'Segoe UI','Helvetica Neue',system-ui,-apple-system,sans-serif;
 </head>
 <body>
 <div id="app" class="app"></div>
+<div class="app">
+  <div class="footer">
+    <div class="footer-logos">
+      <img src="https://graenskref.is/wp-content/uploads/2020/09/VMA-logo-mynd-2.png" alt="VMA" class="footer-logo" onerror="this.style.display='none'">
+    </div>
+    <div class="footer-text">
+      FÓA — 2026 — Rafdeild VMA — <a href="https://vma.is" target="_blank">VMA.is</a><br>
+      Made with <a href="https://claude.ai" target="_blank">Claude.ai</a> and hosted on <a href="https://render.com" target="_blank">Render.com</a>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -226,6 +244,7 @@ function renderWelcome() {
   var tc = gameData.teams.length;
   var html = '<div class="hero">' +
     '<div class="hero-icon">⚡</div>' +
+    '<img src="https://graenskref.is/wp-content/uploads/2020/09/VMA-logo-mynd-2.png" alt="VMA" style="height:50px;margin:8px auto;display:block;border-radius:8px;opacity:0.9" onerror="this.style.display=\'none\'">' +
     '<h1 class="hero-title">THE ENERGY THIEF</h1>' +
     '<h2 class="hero-sub">Find the hidden energy waste</h2>' +
     '<div class="hero-divider"></div>' +
@@ -414,7 +433,7 @@ window.showAddForm = function() {
     '<span class="watts-hint" id="wattsHint"></span></div>' +
     '<div style="margin-top:6px;font-size:11px;color:#64748b">Enter the reading from your energy meter, or leave blank to use the estimate</div></div>' +
     '<div class="form-group"><label class="label">Location</label>' +
-    '<input class="input" type="text" id="locationInput" placeholder="e.g. Room 204, hallway 2nd floor"></div>' +
+    '<input class="input" type="text" id="locationInput" placeholder="e.g. F04 - IT lab"></div>' +
     '<div class="form-group"><label class="label">Note (optional)</label>' +
     '<input class="input" type="text" id="notesInput" placeholder="e.g. Has been on standby all weekend"></div>' +
     '<button class="btn btn-primary btn-full" id="submitFinding" disabled>⚡ Log energy thief</button>' +
@@ -526,9 +545,11 @@ function renderResults() {
         cats[f.deviceLabel].count++;
         cats[f.deviceLabel].watts += f.watts;
       });
-      var ch = Object.entries(cats).sort(function(a, b) { return b[1].watts - a[1].watts; }).map(function(e) {
+      var ch = Object.entries(cats).sort(function(a, b) { return b[1].watts - a[1].watts; }).slice(0, 3).map(function(e) {
         return '<span class="category-tag">' + e[1].icon + ' ' + esc(e[0]) + ' ×' + e[1].count + ' (' + e[1].watts + 'W)</span>';
       }).join("");
+      var extraCats = Object.keys(cats).length - 3;
+      if (extraCats > 0) ch += '<span class="category-tag">+ ' + extraCats + ' more</span>';
 
       return '<div class="leader-card"><div class="leader-top">' +
         '<span class="leader-medal">' + medal + '</span>' +
