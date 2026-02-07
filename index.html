@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚡ The Energy Thief</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Helvetica Neue',system-ui,-apple-system,sans-serif;background:linear-gradient(145deg,#0b0f1a 0%,#0f172a 40%,#0c1425 100%);color:#e2e8f0;min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{max-width:700px;margin:0 auto;padding:20px 16px 80px}
+.hero{text-align:center;margin-bottom:32px}
+.hero-icon{font-size:64px;filter:drop-shadow(0 0 20px rgba(250,204,21,0.4))}
+.hero-title{font-size:clamp(32px,7vw,52px);font-weight:900;line-height:1.1;background:linear-gradient(135deg,#facc15,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.02em;margin:8px 0 4px}
+.hero-sub{font-size:clamp(13px,3vw,17px);color:#64748b;letter-spacing:0.2em;text-transform:uppercase;font-weight:400;margin-bottom:16px}
+.hero-divider{width:60px;height:3px;margin:0 auto 16px;background:linear-gradient(90deg,#facc15,#ef4444);border-radius:2px}
+.hero-desc{font-size:15px;line-height:1.7;color:#94a3b8;max-width:520px;margin:0 auto}
+.mission-box{display:flex;align-items:flex-start;gap:14px;background:rgba(250,204,21,0.06);border:1px solid rgba(250,204,21,0.25);border-radius:12px;padding:14px 18px;margin-top:20px;text-align:left}
+.mission-box.danger{background:rgba(239,68,68,0.1);border-color:#ef4444}
+.mission-box.success{background:rgba(34,197,94,0.1);border-color:#22c55e}
+.mission-icon{font-size:26px;flex-shrink:0;margin-top:2px}
+.mission-title{color:#facc15;display:block;margin-bottom:3px;font-size:13px;font-weight:700}
+.mission-text{color:#cbd5e1;font-size:13px;line-height:1.6}
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.rule-card{background:#1e293b;border-radius:12px;padding:18px 14px;text-align:center;position:relative;border:1px solid #334155}
+.rule-num{position:absolute;top:7px;left:11px;font-size:10px;color:#475569;font-weight:700}
+.rule-icon{font-size:26px;display:block;margin-bottom:6px}
+.rule-title{font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:3px}
+.rule-text{font-size:11px;color:#94a3b8;line-height:1.4}
+.qr-section{text-align:center;margin:28px 0 8px}
+.qr-section canvas{border-radius:12px;background:#fff;padding:12px}
+.qr-label{font-size:12px;color:#64748b;margin-top:8px}
+.qr-url{font-size:13px;color:#f59e0b;font-weight:600;word-break:break-all;margin-top:4px}
+.btn-group{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{border:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s;font-family:inherit}
+.btn:active{transform:scale(0.97)}.btn:disabled{opacity:0.4;cursor:default}
+.btn-primary{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 4px 20px rgba(245,158,11,0.3)}
+.btn-secondary{background:#1e293b;color:#e2e8f0;border:1px solid #475569}
+.btn-danger{background:#ef4444;color:#fff}
+.btn-full{width:100%}
+.badge{background:#f59e0b;color:#000;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:800;margin-left:6px}
+.btn-back{background:none;border:none;color:#94a3b8;font-size:13px;cursor:pointer;padding:6px 0;font-weight:500;font-family:inherit}
+.btn-icon{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer;color:#fff;font-family:inherit;white-space:nowrap}
+.admin-link{position:fixed;bottom:14px;right:14px;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 9px;font-size:15px;cursor:pointer;opacity:0.35;color:#fff}
+.form-group{margin-bottom:18px}
+.label{display:block;font-size:12px;font-weight:600;color:#94a3b8;margin-bottom:7px;text-transform:uppercase;letter-spacing:0.05em}
+.input{width:100%;padding:11px 14px;font-size:15px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#e2e8f0;outline:none;font-family:inherit}
+.input:focus{border-color:#f59e0b}
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:7px;max-height:300px;overflow-y:auto;padding:3px}
+.country-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;background:#1e293b;border:2px solid #334155;border-radius:10px;cursor:pointer;color:#e2e8f0;font-family:inherit;transition:border-color 0.15s;font-size:12px}
+.country-btn.selected{border-color:#f59e0b;background:rgba(245,158,11,0.08)}
+.country-flag{font-size:26px}
+.device-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px}
+.device-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 5px;background:#1e293b;border:2px solid #334155;border-radius:10px;cursor:pointer;color:#e2e8f0;font-family:inherit;transition:border-color 0.15s}
+.device-btn.selected{border-color:#f59e0b;background:rgba(245,158,11,0.08)}
+.device-icon{font-size:20px}.device-label{font-size:9px;text-align:center;line-height:1.2}.device-watts{font-size:9px;color:#f59e0b;font-weight:700}
+.team-select-grid{display:flex;flex-direction:column;gap:8px;margin:16px 0}
+.team-select-btn{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#1e293b;border:2px solid #334155;border-radius:12px;cursor:pointer;color:#e2e8f0;font-family:inherit;transition:border-color 0.15s,background 0.15s;font-size:15px;text-align:left;width:100%}
+.team-select-btn:hover{border-color:#f59e0b;background:rgba(245,158,11,0.05)}
+.team-select-flag{font-size:30px}.team-select-name{font-weight:700;color:#f1f5f9}.team-select-country{font-size:12px;color:#64748b}
+.team-select-stats{margin-left:auto;text-align:right;font-size:12px;color:#64748b}
+.team-select-stats strong{color:#facc15;font-size:14px;display:block}
+.team-banner{display:flex;align-items:center;gap:14px;padding:14px 18px;background:#1e293b;border-radius:14px;border:1px solid #334155;margin-bottom:14px}
+.team-flag{font-size:34px}.team-name{font-size:20px;font-weight:800;color:#f1f5f9}.team-country{font-size:12px;color:#64748b}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:#1e293b;border-radius:12px;padding:14px;text-align:center;border:1px solid #334155}
+.stat-card.highlight{background:linear-gradient(135deg,rgba(245,158,11,0.07),rgba(239,68,68,0.07));border-color:rgba(245,158,11,0.25)}
+.stat-value{display:block;font-size:26px;font-weight:900;color:#facc15}
+.stat-label{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em}
+.grand-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:9px;margin-bottom:6px}
+.grand-stat{background:#1e293b;border-radius:12px;padding:14px 10px;text-align:center;border:1px solid #334155}
+.grand-val{display:block;font-size:20px;font-weight:900;color:#facc15;margin-bottom:3px}
+.grand-label{font-size:10px;color:#64748b;text-transform:uppercase}
+.footnote{font-size:10px;color:#475569;text-align:center;margin:3px 0 20px;font-style:italic}
+.action-row{display:flex;gap:10px;margin-bottom:18px}.action-row .btn{flex:1}
+.finding-card{display:flex;align-items:center;gap:10px;background:#1e293b;border-radius:12px;padding:10px 14px;border:1px solid #334155;margin-bottom:8px}
+.finding-icon{font-size:26px;flex-shrink:0}.finding-info{flex:1;min-width:0}
+.finding-device{font-size:13px;color:#f1f5f9;display:block}.finding-location{font-size:11px;color:#64748b;display:block}
+.finding-notes{font-size:10px;color:#475569;font-style:italic;display:block}
+.finding-right{text-align:right;flex-shrink:0}
+.finding-watts{font-size:15px;font-weight:800;color:#facc15;display:block}
+.finding-measured{font-size:9px;color:#22c55e}.finding-estimated{font-size:9px;color:#64748b}
+.finding-del{background:none;border:none;font-size:13px;cursor:pointer;opacity:0.35;padding:2px;margin-top:2px}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding:36px 14px;z-index:1000;overflow-y:auto}
+.modal{background:#0f172a;border:1px solid #334155;border-radius:16px;padding:22px;max-width:500px;width:100%}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-title{font-size:18px;font-weight:800}
+.modal-close{background:none;border:none;color:#64748b;font-size:18px;cursor:pointer;padding:3px;font-family:inherit}
+.watts-row{display:flex;gap:10px;align-items:center;padding:12px 14px;background:#1e293b;border-radius:10px;border:1px solid #334155}
+.watts-input{width:100px;padding:8px 10px;font-size:15px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#facc15;outline:none;font-family:inherit;font-weight:700;text-align:right}
+.watts-input:focus{border-color:#f59e0b}
+.watts-unit{color:#94a3b8;font-weight:600;font-size:14px}
+.watts-hint{font-size:11px;color:#64748b;margin-left:auto}
+.leader-card{background:#1e293b;border-radius:14px;padding:14px 18px;border:1px solid #334155;margin-bottom:10px}
+.leader-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.leader-medal{font-size:22px;font-weight:900;min-width:34px;text-align:center}
+.leader-flag{font-size:26px}.leader-info{flex:1}
+.leader-name{font-size:15px;font-weight:700;color:#f1f5f9;display:block}
+.leader-country{font-size:11px;color:#64748b}
+.leader-score{text-align:right;flex-shrink:0}
+.leader-watts{font-size:16px;font-weight:900;color:#facc15;display:block}
+.leader-count{font-size:10px;color:#64748b}
+.bar-container{height:5px;background:#0f172a;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.bar-fill{height:100%;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:3px;transition:width 0.5s ease}
+.category-list{display:flex;flex-wrap:wrap;gap:5px}
+.category-tag{font-size:10px;background:#0f172a;padding:2px 7px;border-radius:5px;color:#94a3b8;border:1px solid #1e293b}
+.insight-box{background:linear-gradient(135deg,rgba(20,83,45,0.2),rgba(22,101,52,0.4));border:1px solid rgba(34,197,94,0.25);border-radius:14px;padding:18px 22px;margin-top:22px}
+.insight-title{font-size:15px;color:#4ade80;margin-bottom:6px;font-weight:700}
+.insight-text{font-size:13px;line-height:1.6;color:#bbf7d0}
+.empty-state{text-align:center;padding:36px 16px}.empty-icon{font-size:44px}
+.empty-text{font-size:15px;color:#64748b;margin:10px 0 3px}.empty-sub{font-size:12px;color:#475569}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.results-title{font-size:26px;font-weight:900;text-align:center;margin:6px 0 18px}
+.setup-title{font-size:26px;font-weight:800;margin:6px 0 22px;color:#f1f5f9}
+.confirm-row{display:flex;gap:10px}.confirm-row .btn{flex:1}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+
+var COUNTRIES = [
+  { code: "IS", name: "Iceland", flag: "🇮🇸" },
+  { code: "DE", name: "Germany", flag: "🇩🇪" },
+  { code: "NL", name: "Netherlands", flag: "🇳🇱" },
+  { code: "FI", name: "Finland", flag: "🇫🇮" },
+  { code: "NO", name: "Norway", flag: "🇳🇴" },
+  { code: "SE", name: "Sweden", flag: "🇸🇪" },
+  { code: "DK", name: "Denmark", flag: "🇩🇰" },
+  { code: "ES", name: "Spain", flag: "🇪🇸" },
+  { code: "PT", name: "Portugal", flag: "🇵🇹" },
+  { code: "FR", name: "France", flag: "🇫🇷" },
+  { code: "IT", name: "Italy", flag: "🇮🇹" },
+  { code: "PL", name: "Poland", flag: "🇵🇱" },
+  { code: "CZ", name: "Czech Republic", flag: "🇨🇿" },
+  { code: "AT", name: "Austria", flag: "🇦🇹" },
+  { code: "BE", name: "Belgium", flag: "🇧🇪" },
+  { code: "IE", name: "Ireland", flag: "🇮🇪" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "GR", name: "Greece", flag: "🇬🇷" },
+  { code: "RO", name: "Romania", flag: "🇷🇴" },
+  { code: "HR", name: "Croatia", flag: "🇭🇷" },
+  { code: "SI", name: "Slovenia", flag: "🇸🇮" },
+  { code: "SK", name: "Slovakia", flag: "🇸🇰" },
+  { code: "LT", name: "Lithuania", flag: "🇱🇹" },
+  { code: "LV", name: "Latvia", flag: "🇱🇻" },
+  { code: "EE", name: "Estonia", flag: "🇪🇪" }
+];
+
+var DEVICE_TYPES = [
+  { id: "screen_standby", label: "Screen on standby", icon: "🖥️", watts: 15 },
+  { id: "projector_empty", label: "Projector on – empty room", icon: "📽️", watts: 280 },
+  { id: "lights_empty", label: "Lights on – empty room", icon: "💡", watts: 120 },
+  { id: "computer_idle", label: "Computer on – nobody using", icon: "💻", watts: 80 },
+  { id: "printer_standby", label: "Printer on standby", icon: "🖨️", watts: 10 },
+  { id: "charger_empty", label: "Charger plugged in – nothing charging", icon: "🔌", watts: 5 },
+  { id: "coffee_on", label: "Coffee machine on – nobody using", icon: "☕", watts: 1000 },
+  { id: "heater_open", label: "Heater on – window open", icon: "🔥", watts: 1500 },
+  { id: "ventilation", label: "Ventilation in empty room", icon: "🌀", watts: 200 },
+  { id: "tv_standby", label: "TV on standby", icon: "📺", watts: 12 },
+  { id: "water_heater", label: "Water heater – unnecessary", icon: "🚿", watts: 2000 },
+  { id: "other", label: "Other", icon: "⚡", watts: 50 }
+];
+
+var GAME_URL = window.location.origin;
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+
+function apiGet() { return fetch("/api/data").then(function(r) { return r.json(); }); }
+function apiPost(d) {
+  return fetch("/api/data", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(d)
+  }).then(function(r) { return r.json(); });
+}
+function genId() { return Math.random().toString(36).substr(2, 9) + Date.now().toString(36); }
+function fmtW(w) { return w >= 1000 ? (w / 1000).toFixed(1) + " kW" : w + " W"; }
+function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+
+var currentScreen = "welcome";
+var currentTeam = null;
+var gameData = { teams: [], findings: {} };
+var refreshInterval = null;
+var app = document.getElementById("app");
+
+function navigate(screen, team) {
+  currentScreen = screen;
+  if (team !== undefined) currentTeam = team;
+  if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+  render();
+}
+
+function refreshData() { return apiGet().then(function(d) { gameData = d; }); }
+
+function render() {
+  return refreshData().then(function() {
+    switch (currentScreen) {
+      case "welcome": renderWelcome(); break;
+      case "setup": renderSetup(); break;
+      case "rejoin": renderRejoin(); break;
+      case "hunting": renderHunting(); break;
+      case "results": renderResults(); break;
+      case "admin": renderAdmin(); break;
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+
+function renderWelcome() {
+  var tc = gameData.teams.length;
+  var html = '<div class="hero">' +
+    '<div class="hero-icon">⚡</div>' +
+    '<h1 class="hero-title">THE ENERGY THIEF</h1>' +
+    '<h2 class="hero-sub">Find the hidden energy waste</h2>' +
+    '<div class="hero-divider"></div>' +
+    '<p class="hero-desc">Energy is being wasted all around us every day — screens on standby, lights in empty rooms, computers nobody is using. In this game you become energy detectives and hunt down the energy thieves hiding in the school.</p>' +
+    '<div class="mission-box"><div class="mission-icon">🔍</div><div>' +
+    '<strong class="mission-title">Your mission:</strong>' +
+    '<p class="mission-text">Walk around the school with an energy meter and find devices that waste energy. Log everything you find — the team that finds the most energy waste wins!</p>' +
+    '</div></div></div>' +
+    '<div class="rules-grid">' +
+    '<div class="rule-card"><span class="rule-num">01</span><span class="rule-icon">👥</span><div class="rule-title">Create a team</div><div class="rule-text">Pick your country and name your team</div></div>' +
+    '<div class="rule-card"><span class="rule-num">02</span><span class="rule-icon">🔎</span><div class="rule-title">Search</div><div class="rule-text">Walk around the school and find energy thieves</div></div>' +
+    '<div class="rule-card"><span class="rule-num">03</span><span class="rule-icon">📝</span><div class="rule-title">Log</div><div class="rule-text">Record device type, location, and measured watts</div></div>' +
+    '<div class="rule-card"><span class="rule-num">04</span><span class="rule-icon">🏆</span><div class="rule-title">Win!</div><div class="rule-text">The team that finds the most energy waste wins</div></div>' +
+    '</div>' +
+    '<div class="btn-group">' +
+    '<button class="btn btn-primary" onclick="navigate(\'setup\')">⚡ Create team</button>' +
+    (tc > 0 ? '<button class="btn btn-secondary" onclick="navigate(\'rejoin\')">👥 Rejoin team<span class="badge">' + tc + '</span></button>' : '') +
+    '</div>' +
+    '<div style="height:12px"></div>' +
+    '<div class="btn-group"><button class="btn btn-secondary" onclick="navigate(\'results\')">📊 Leaderboard</button></div>' +
+    '<div class="qr-section" id="qrSection"></div>' +
+    '<button class="admin-link" onclick="navigate(\'admin\')">⚙️</button>';
+  app.innerHTML = html;
+
+  // QR Code
+  setTimeout(function() {
+    var sec = document.getElementById("qrSection");
+    if (sec && GAME_URL.indexOf("http") === 0 && typeof QRCode !== "undefined") {
+      sec.innerHTML = '<div id="qrCanvas" style="display:inline-block;border-radius:12px;overflow:hidden"></div>' +
+        '<div class="qr-label">Scan to join the game</div>' +
+        '<div class="qr-url">' + GAME_URL + '</div>';
+      new QRCode(document.getElementById("qrCanvas"), {
+        text: GAME_URL, width: 160, height: 160,
+        colorDark: "#0f172a", colorLight: "#ffffff"
+      });
+    }
+  }, 100);
+}
+
+function renderRejoin() {
+  var html = '<button class="btn-back" onclick="navigate(\'welcome\')">← Back</button>' +
+    '<h2 class="setup-title">Rejoin your team</h2>' +
+    '<p style="color:#94a3b8;font-size:14px;margin-bottom:16px">Select your team to continue logging energy thieves:</p>' +
+    '<div class="team-select-grid">';
+
+  gameData.teams.forEach(function(t) {
+    var f = gameData.findings[t.id] || [];
+    var w = f.reduce(function(s, x) { return s + x.watts; }, 0);
+    html += '<button class="team-select-btn" onclick="rejoinTeam(\'' + t.id + '\')">' +
+      '<span class="team-select-flag">' + t.country.flag + '</span>' +
+      '<div><div class="team-select-name">' + esc(t.name) + '</div>' +
+      '<div class="team-select-country">' + t.country.name + '</div></div>' +
+      '<div class="team-select-stats"><strong>' + fmtW(w) + '</strong>' + f.length + ' found</div></button>';
+  });
+  html += '</div>';
+  app.innerHTML = html;
+}
+
+window.rejoinTeam = function(id) {
+  var t = gameData.teams.find(function(x) { return x.id === id; });
+  if (t) navigate("hunting", t);
+};
+
+function renderSetup() {
+  var selectedCountry = null;
+  app.innerHTML = '<button class="btn-back" onclick="navigate(\'welcome\')">← Back</button>' +
+    '<h2 class="setup-title">Create a team</h2>' +
+    '<div class="form-group"><label class="label">Team name</label>' +
+    '<input class="input" type="text" id="teamNameInput" placeholder="e.g. Volt Vikings" maxlength="30"></div>' +
+    '<div class="form-group"><label class="label">Country</label>' +
+    '<input class="input" type="text" id="countrySearch" placeholder="🔍 Search country..." style="margin-bottom:10px">' +
+    '<div class="country-grid" id="countryGrid"></div></div>' +
+    '<button class="btn btn-primary btn-full" id="createBtn" disabled>⚡ Start hunting!</button>';
+
+  var grid = document.getElementById("countryGrid");
+  var search = document.getElementById("countrySearch");
+  var createBtn = document.getElementById("createBtn");
+  var nameInput = document.getElementById("teamNameInput");
+
+  function showCountries(filter) {
+    var list = filter ? COUNTRIES.filter(function(c) { return c.name.toLowerCase().indexOf(filter.toLowerCase()) >= 0; }) : COUNTRIES;
+    grid.innerHTML = list.map(function(c) {
+      return '<button class="country-btn" data-code="' + c.code + '" onclick="pickCountry(\'' + c.code + '\')">' +
+        '<span class="country-flag">' + c.flag + '</span><span>' + c.name + '</span></button>';
+    }).join("");
+  }
+  showCountries("");
+  search.addEventListener("input", function() { showCountries(search.value); });
+
+  window.pickCountry = function(code) {
+    selectedCountry = COUNTRIES.find(function(c) { return c.code === code; });
+    grid.querySelectorAll(".country-btn").forEach(function(b) { b.classList.remove("selected"); });
+    var el = grid.querySelector('[data-code="' + code + '"]');
+    if (el) el.classList.add("selected");
+    checkReady();
+  };
+
+  function checkReady() {
+    createBtn.disabled = !(nameInput.value.trim() && selectedCountry);
+  }
+  nameInput.addEventListener("input", checkReady);
+
+  createBtn.addEventListener("click", function() {
+    if (!nameInput.value.trim() || !selectedCountry) return;
+    createBtn.disabled = true;
+    createBtn.textContent = "Creating...";
+    var team = { id: genId(), name: nameInput.value.trim(), country: selectedCountry, createdAt: new Date().toISOString() };
+    apiGet().then(function(data) {
+      data.teams.push(team);
+      data.findings[team.id] = [];
+      return apiPost(data);
+    }).then(function() {
+      navigate("hunting", team);
+    });
+  });
+}
+
+function renderHunting() {
+  var team = currentTeam;
+  var findings = gameData.findings[team.id] || [];
+  var tw = findings.reduce(function(s, f) { return s + f.watts; }, 0);
+
+  var fl;
+  if (findings.length === 0) {
+    fl = '<div class="empty-state"><div class="empty-icon">🔍</div>' +
+      '<p class="empty-text">No energy thieves logged yet</p>' +
+      '<p class="empty-sub">Go explore the school and find them!</p></div>';
+  } else {
+    fl = findings.slice().reverse().map(function(f) {
+      return '<div class="finding-card">' +
+        '<div class="finding-icon">' + f.icon + '</div>' +
+        '<div class="finding-info">' +
+        '<strong class="finding-device">' + esc(f.deviceLabel) + '</strong>' +
+        '<span class="finding-location">📍 ' + esc(f.location) + '</span>' +
+        (f.notes ? '<span class="finding-notes">💬 ' + esc(f.notes) + '</span>' : '') +
+        '</div><div class="finding-right">' +
+        '<span class="finding-watts">' + f.watts + 'W</span>' +
+        '<span class="' + (f.measured ? 'finding-measured' : 'finding-estimated') + '">' +
+        (f.measured ? '📐 measured' : '≈ estimated') + '</span>' +
+        '<button class="finding-del" onclick="deleteFinding(\'' + f.id + '\')">🗑️</button>' +
+        '</div></div>';
+    }).join("");
+  }
+
+  app.innerHTML = '<div class="header-row">' +
+    '<button class="btn-back" onclick="navigate(\'welcome\')">← Home</button>' +
+    '<button class="btn-back" onclick="navigate(\'results\')" style="border:1px solid #334155;padding:5px 10px;border-radius:8px">📊 Leaderboard</button></div>' +
+    '<div class="team-banner"><span class="team-flag">' + team.country.flag + '</span><div>' +
+    '<div class="team-name">' + esc(team.name) + '</div>' +
+    '<div class="team-country">' + team.country.name + '</div></div></div>' +
+    '<div class="stats-row">' +
+    '<div class="stat-card"><span class="stat-value">' + findings.length + '</span><span class="stat-label">Energy thieves found</span></div>' +
+    '<div class="stat-card highlight"><span class="stat-value">' + fmtW(tw) + '</span><span class="stat-label">Total waste</span></div></div>' +
+    '<div class="action-row"><button class="btn btn-primary" onclick="showAddForm()">+ Log energy thief</button>' +
+    '<button class="btn-icon" onclick="render()">🔄</button></div>' +
+    '<div id="findingsList">' + fl + '</div>' +
+    '<div id="modalContainer"></div>';
+
+  refreshInterval = setInterval(function() { refreshData(); }, 10000);
+}
+
+window.showAddForm = function() {
+  var sel = null;
+  var modal = document.getElementById("modalContainer");
+
+  var dg = DEVICE_TYPES.map(function(d) {
+    return '<button class="device-btn" data-id="' + d.id + '" onclick="pickDevice(\'' + d.id + '\')">' +
+      '<span class="device-icon">' + d.icon + '</span>' +
+      '<span class="device-label">' + d.label + '</span>' +
+      '<span class="device-watts">~' + d.watts + 'W</span></button>';
+  }).join("");
+
+  modal.innerHTML = '<div class="overlay" onclick="if(event.target===this)closeModal()">' +
+    '<div class="modal"><div class="modal-header"><h3 class="modal-title">Log energy thief</h3>' +
+    '<button class="modal-close" onclick="closeModal()">✕</button></div>' +
+    '<div class="form-group"><label class="label">Device type</label>' +
+    '<div class="device-grid">' + dg + '</div></div>' +
+    '<div id="customFields" style="display:none"><div class="form-group">' +
+    '<label class="label">Device description</label>' +
+    '<input class="input" type="text" id="customLabel" placeholder="What device is this?"></div></div>' +
+    '<div class="form-group" id="wattsGroup" style="display:none">' +
+    '<label class="label">Power consumption (watts)</label>' +
+    '<div class="watts-row">' +
+    '<input class="watts-input" type="number" id="wattsInput" placeholder="—" min="0">' +
+    '<span class="watts-unit">W</span>' +
+    '<span class="watts-hint" id="wattsHint"></span></div>' +
+    '<div style="margin-top:6px;font-size:11px;color:#64748b">Enter the reading from your energy meter, or leave blank to use the estimate</div></div>' +
+    '<div class="form-group"><label class="label">Location</label>' +
+    '<input class="input" type="text" id="locationInput" placeholder="e.g. Room 204, hallway 2nd floor"></div>' +
+    '<div class="form-group"><label class="label">Note (optional)</label>' +
+    '<input class="input" type="text" id="notesInput" placeholder="e.g. Has been on standby all weekend"></div>' +
+    '<button class="btn btn-primary btn-full" id="submitFinding" disabled>⚡ Log energy thief</button>' +
+    '</div></div>';
+
+  window.pickDevice = function(id) {
+    sel = DEVICE_TYPES.find(function(d) { return d.id === id; });
+    document.querySelectorAll(".device-btn").forEach(function(b) { b.classList.remove("selected"); });
+    var el = document.querySelector('.device-btn[data-id="' + id + '"]');
+    if (el) el.classList.add("selected");
+    document.getElementById("customFields").style.display = (id === "other") ? "block" : "none";
+    document.getElementById("wattsGroup").style.display = "block";
+    document.getElementById("wattsInput").placeholder = sel.watts;
+    document.getElementById("wattsHint").textContent = "Estimate: ~" + sel.watts + "W";
+    checkSubmit();
+  };
+
+  function checkSubmit() {
+    var loc = document.getElementById("locationInput").value.trim();
+    document.getElementById("submitFinding").disabled = !(sel && loc);
+  }
+  document.getElementById("locationInput").addEventListener("input", checkSubmit);
+
+  document.getElementById("submitFinding").addEventListener("click", function() {
+    if (!sel) return;
+    var loc = document.getElementById("locationInput").value.trim();
+    if (!loc) return;
+    var btn = document.getElementById("submitFinding");
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    var wv = document.getElementById("wattsInput").value;
+    var cl = document.getElementById("customLabel");
+    var hasMeasured = wv && Number(wv) > 0;
+
+    var finding = {
+      id: genId(),
+      deviceType: sel.id,
+      deviceLabel: (sel.id === "other" && cl && cl.value) ? cl.value : sel.label,
+      icon: sel.icon,
+      location: loc,
+      watts: hasMeasured ? Number(wv) : sel.watts,
+      measured: !!hasMeasured,
+      notes: document.getElementById("notesInput").value.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    apiGet().then(function(data) {
+      if (!data.findings[currentTeam.id]) data.findings[currentTeam.id] = [];
+      data.findings[currentTeam.id].push(finding);
+      return apiPost(data);
+    }).then(function() {
+      closeModal();
+      render();
+    });
+  });
+};
+
+window.closeModal = function() {
+  var c = document.getElementById("modalContainer");
+  if (c) c.innerHTML = "";
+};
+
+window.deleteFinding = function(fid) {
+  apiGet().then(function(data) {
+    data.findings[currentTeam.id] = (data.findings[currentTeam.id] || []).filter(function(f) { return f.id !== fid; });
+    return apiPost(data);
+  }).then(function() { render(); });
+};
+
+function renderResults() {
+  var ts = gameData.teams.map(function(t) {
+    var f = gameData.findings[t.id] || [];
+    return {
+      id: t.id, name: t.name, country: t.country, findings: f,
+      totalWatts: f.reduce(function(s, x) { return s + x.watts; }, 0),
+      count: f.length,
+      measured: f.filter(function(x) { return x.measured; }).length
+    };
+  }).sort(function(a, b) { return b.totalWatts - a.totalWatts; });
+
+  var gt = ts.reduce(function(s, t) { return s + t.totalWatts; }, 0);
+  var gc = ts.reduce(function(s, t) { return s + t.count; }, 0);
+  var akwh = (gt * 8 * 250) / 1000;
+  var mxw = ts.length > 0 ? ts[0].totalWatts : 1;
+
+  var insight = "";
+  if (gt > 0) {
+    var extra = "";
+    if (akwh > 1000) extra = " That's enough to heat about " + Math.round(akwh / 18000) + " homes for a year!";
+    else if (akwh > 100) extra = " That's enough to charge a phone " + Math.round(akwh / 0.012) + " times!";
+    else extra = " Keep searching — more energy thieves are hiding in the school!";
+    insight = '<div class="insight-box"><div class="insight-title">💡 Did you know?</div>' +
+      '<p class="insight-text">The energy waste you found (' + fmtW(gt) + ') equals about ' + akwh.toFixed(0) + ' kWh per year.' + extra + '</p></div>';
+  }
+
+  var lb;
+  if (ts.length === 0) {
+    lb = '<div class="empty-state"><div class="empty-icon">🏁</div>' +
+      '<p class="empty-text">No teams registered yet</p>' +
+      '<p class="empty-sub">Waiting for teams to join!</p></div>';
+  } else {
+    lb = ts.map(function(t, i) {
+      var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1);
+      var bw = mxw > 0 ? (t.totalWatts / mxw) * 100 : 0;
+      var cats = {};
+      t.findings.forEach(function(f) {
+        if (!cats[f.deviceLabel]) cats[f.deviceLabel] = { count: 0, watts: 0, icon: f.icon };
+        cats[f.deviceLabel].count++;
+        cats[f.deviceLabel].watts += f.watts;
+      });
+      var ch = Object.entries(cats).sort(function(a, b) { return b[1].watts - a[1].watts; }).map(function(e) {
+        return '<span class="category-tag">' + e[1].icon + ' ' + esc(e[0]) + ' ×' + e[1].count + ' (' + e[1].watts + 'W)</span>';
+      }).join("");
+
+      return '<div class="leader-card"><div class="leader-top">' +
+        '<span class="leader-medal">' + medal + '</span>' +
+        '<span class="leader-flag">' + t.country.flag + '</span>' +
+        '<div class="leader-info"><strong class="leader-name">' + esc(t.name) + '</strong>' +
+        '<span class="leader-country">' + t.country.name + ' · ' + t.measured + ' measured</span></div>' +
+        '<div class="leader-score"><span class="leader-watts">' + fmtW(t.totalWatts) + '</span>' +
+        '<span class="leader-count">' + t.count + ' found</span></div></div>' +
+        '<div class="bar-container"><div class="bar-fill" style="width:' + bw + '%"></div></div>' +
+        (ch ? '<div class="category-list">' + ch + '</div>' : '') + '</div>';
+    }).join("");
+  }
+
+  var backTarget = currentTeam ? "hunting" : "welcome";
+  app.innerHTML = '<div class="header-row">' +
+    '<button class="btn-back" onclick="navigate(\'' + backTarget + '\')">← Back</button>' +
+    '<button class="btn-icon" id="arBtn" onclick="toggleAR()">🟢 Auto-refresh</button></div>' +
+    '<h2 class="results-title">📊 Leaderboard</h2>' +
+    '<div class="grand-stats">' +
+    '<div class="grand-stat"><span class="grand-val">' + ts.length + '</span><span class="grand-label">Teams</span></div>' +
+    '<div class="grand-stat"><span class="grand-val">' + gc + '</span><span class="grand-label">Energy thieves</span></div>' +
+    '<div class="grand-stat"><span class="grand-val">' + fmtW(gt) + '</span><span class="grand-label">Total waste</span></div>' +
+    '<div class="grand-stat"><span class="grand-val">' + akwh.toFixed(0) + ' kWh</span><span class="grand-label">Est. per year*</span></div>' +
+    '</div><p class="footnote">* Based on 8 hrs/day, 250 working days per year</p>' +
+    lb + insight;
+
+  var ar = true;
+  refreshInterval = setInterval(function() {
+    if (ar) refreshData().then(function() { renderResults(); });
+  }, 5000);
+
+  window.toggleAR = function() {
+    ar = !ar;
+    var b = document.getElementById("arBtn");
+    if (b) b.textContent = ar ? "🟢 Auto-refresh" : "⏸ Paused";
+  };
+}
+
+function renderAdmin() {
+  app.innerHTML = '<button class="btn-back" onclick="navigate(\'welcome\')">← Back</button>' +
+    '<h2 class="setup-title">⚙️ Admin panel</h2>' +
+    '<div class="mission-box danger"><div class="mission-icon">⚠️</div><div>' +
+    '<strong class="mission-title" style="color:#ef4444">Clear all data</strong>' +
+    '<p class="mission-text">This deletes all teams and findings. This cannot be undone!</p></div></div><br>' +
+    '<div id="adminActions"><button class="btn btn-danger btn-full" onclick="confirmReset()">🗑️ Clear all data</button></div>';
+
+  window.confirmReset = function() {
+    document.getElementById("adminActions").innerHTML =
+      '<div class="confirm-row">' +
+      '<button class="btn btn-danger" onclick="doReset()">Yes, delete everything</button>' +
+      '<button class="btn btn-secondary" onclick="renderAdmin()">Cancel</button></div>';
+  };
+
+  window.doReset = function() {
+    apiPost({ teams: [], findings: {} }).then(function() {
+      currentTeam = null;
+      document.getElementById("adminActions").innerHTML =
+        '<div class="mission-box success"><p style="color:#22c55e;margin:0">✅ All data has been cleared!</p></div>';
+    });
+  };
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+render();
+</script>
+</body>
+</html>
